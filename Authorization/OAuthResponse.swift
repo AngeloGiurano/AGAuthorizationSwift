@@ -11,13 +11,13 @@ import ObjectMapper
 import KeychainAccess
 import DateTools
 
-final class OAuthResponse: Mappable {
+public final class OAuthResponse: Mappable {
     
     fileprivate var authToken: String?
     fileprivate var refreshToken: String?
     fileprivate var expiresIn: Int?
     
-    required init?(map: Map) {
+    required public init?(map: Map) {
         guard let authToken = map.JSON[CONSTANTS.AuthKeys.accessTokenKey] as? String, let refreshToken = map.JSON[CONSTANTS.AuthKeys.refreshTokenKey] as? String, let expDate = map.JSON[CONSTANTS.AuthKeys.expDateKey] as? Int else {
             return nil
         }
@@ -34,7 +34,7 @@ final class OAuthResponse: Mappable {
         self.expiresIn = 3600
     }
     
-    func mapping(map: Map) {
+    public func mapping(map: Map) {
         authToken <- map[CONSTANTS.AuthKeys.accessTokenKey]
         refreshToken <- map[CONSTANTS.AuthKeys.refreshTokenKey]
         expiresIn <- map[CONSTANTS.AuthKeys.expDateKey]

@@ -9,13 +9,13 @@
 import Foundation
 import ObjectMapper
 
-struct File: Mappable {
+public struct File: Mappable {
     var path: String?
     var name: String?
 
-    init?(map: Map) {}
+    public init?(map: Map) {}
     
-    mutating func mapping(map: Map) {
+    mutating public func mapping(map: Map) {
         path <- map["path"]
         name <- map["name"]
     }

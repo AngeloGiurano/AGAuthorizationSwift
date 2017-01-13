@@ -29,13 +29,13 @@ enum AuthErrorType: Error {
     }
 }
 
-final class AuthorizationService {
+public final class AuthorizationService {
     
-    static let sharedInstance = AuthorizationService()
+    public static let sharedInstance = AuthorizationService()
     
     fileprivate init() {}
     
-    static var token_header: [String: String]? {
+    public static var token_header: [String: String]? {
         get {
             guard let token = Keychain.sharedInstance.accessToken else { return nil }
             return ["Authorization": "Bearer \(token)"]
@@ -43,14 +43,14 @@ final class AuthorizationService {
     }
     
     
-    static var loginParameters: [String: String] {
+    public static var loginParameters: [String: String] {
         get {
             let parameters: [String: String] = [CONSTANTS.AuthKeys.CLIENT_ID: CONSTANTS.client_id, CONSTANTS.AuthKeys.CLIENT_SECRET: CONSTANTS.client_secret, CONSTANTS.AuthKeys.GRANT_TYPE: GrantType.password.rawValue]
             return parameters
         }
     }
     
-    static var refreshTokenParameters: [String: String]? {
+    public static var refreshTokenParameters: [String: String]? {
         get {
             guard let refreshToken = Keychain.sharedInstance.refreshToken else { return nil }
             let parameters: [String: String] = [CONSTANTS.AuthKeys.CLIENT_ID: CONSTANTS.client_id, CONSTANTS.AuthKeys.CLIENT_SECRET: CONSTANTS.client_secret, CONSTANTS.AuthKeys.GRANT_TYPE: GrantType.refreshToken.rawValue, CONSTANTS.AuthKeys.refreshTokenKey: refreshToken]
@@ -58,7 +58,7 @@ final class AuthorizationService {
         }
     }
     
-    static var registerParameters: [String: String] {
+    public static var registerParameters: [String: String] {
         get {
             let parameters: [String: String] = [CONSTANTS.AuthKeys.CLIENT_ID: CONSTANTS.client_id, CONSTANTS.AuthKeys.CLIENT_SECRET: CONSTANTS.client_secret, CONSTANTS.AuthKeys.GRANT_TYPE: GrantType.clientCredentials.rawValue]
             return parameters
@@ -66,7 +66,7 @@ final class AuthorizationService {
     }
     
     
-    func login(withUsername username: String, andPassword password: String) -> Promise<OAuthResponse?> {
+    public func login(withUsername username: String, andPassword password: String) -> Promise<OAuthResponse?> {
         var parameters = AuthorizationService.loginParameters
         parameters += ["username": username, "password": password]
         return HTTPClient.sharedInstance.unauthorizedPost(AuthRouter.login, parameters: parameters as [String : AnyObject]?)
@@ -77,12 +77,12 @@ final class AuthorizationService {
 //        return HTTPClient.sharedInstance.unauthorizedPost(AuthRouter.register(token), parameters: parameters)
 //    }
     
-    func getRegisterToken() -> Promise<String> {
+    public func getRegisterToken() -> Promise<String> {
         let parameters = AuthorizationService.registerParameters
         return getToken(AuthRouter.login, withParams: parameters as [String : AnyObject]?)
     }
     
-    func getValidToken() -> Promise<OAuthResponse?> {
+    public func getValidToken() -> Promise<OAuthResponse?> {
         let parameters = AuthorizationService.refreshTokenParameters
         return getValidToken(AuthRouter.refreshToken, withParams: parameters as [String : AnyObject]?)
     }
@@ -147,7 +147,7 @@ final class AuthorizationService {
         }
     }
     
-    func logout() {
+    public func logout() {
         Keychain.sharedInstance.logOut()
         let appDelegate = UIApplication.shared.delegate
         appDelegate?.window!!.rootViewController = MainControllerManager.mainViewController

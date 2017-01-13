@@ -32,7 +32,7 @@ enum APIError: Error {
 }
 
 
-class HTTPClient : NSObject {
+public class HTTPClient : NSObject {
     static let sharedInstance = HTTPClient()
     
     

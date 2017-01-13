@@ -9,17 +9,17 @@
 import Foundation
 import ObjectMapper
 
-struct CountReply<T: Mappable>: Mappable {
+public struct CountReply<T: Mappable>: Mappable {
     var success: Bool = false
     var data: [T]?
     var pagination: Pagination?
     var error: APIError?
     
-    init?(map: Map) {}
+    public init?(map: Map) {}
     
     init() {}
     
-    mutating func mapping(map: Map) {
+    mutating public func mapping(map: Map) {
         success <- map["success"]
         data <- map["data"]
         pagination <- map["pagination"]

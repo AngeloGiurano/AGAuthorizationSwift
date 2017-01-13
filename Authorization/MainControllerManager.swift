@@ -11,7 +11,7 @@ import UIKit
 import Alamofire
 import KeychainAccess
 
-struct MainControllerManager {
+public struct MainControllerManager {
     static var loggedInController: UIViewController {
         get {
             return UIViewController()

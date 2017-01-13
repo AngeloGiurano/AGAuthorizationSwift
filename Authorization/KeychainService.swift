@@ -9,7 +9,7 @@
 import Foundation
 import KeychainAccess
 
-extension Keychain {
+public extension Keychain {
     static let sharedInstance = Keychain(service: CONSTANTS.KeychainConstants.service)
     
     var accessToken: String? {

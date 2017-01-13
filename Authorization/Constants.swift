@@ -8,11 +8,11 @@
 
 import Foundation
 
-struct CONSTANTS {
-    static let basePath = ""
+public struct CONSTANTS {
+    static let basePath = "http://api.anpost.ops-dev.pl/"
 
-    static let client_id = ""
-    static let client_secret = ""
+    static let client_id = "2_55ltqp8wo0u8w4ocgkoc8kowkg00gco4oc4osskgwgs4go00ks"
+    static let client_secret = "avia4sc44lwocwok80ogw0k4owwg80cc0w4gw8wc4cc4c000c"
     
     struct AuthURLS {
         static let loginPath = basePath + "oauth/v2/token"
@@ -31,7 +31,7 @@ struct CONSTANTS {
     }
     
     struct KeychainConstants {
-        static let service = ""
+        static let service = "com.returnpal.anpost"
         static let accessTokenKey = ""
         static let refreshTokenKey = ""
         static let expDateKey = ""
