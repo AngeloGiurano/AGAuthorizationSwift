@@ -17,7 +17,6 @@ PODS:
     - PromiseKit/CorePromise
   - PromiseKit/UIKit (4.0.0):
     - PromiseKit/CorePromise
-  - SVProgressHUD (2.0.3)
 
 DEPENDENCIES:
   - Alamofire
@@ -25,7 +24,6 @@ DEPENDENCIES:
   - DateTools
   - KeychainAccess (~> 3.0)
   - PromiseKit (from `https://github.com/mxcl/PromiseKit.git`, branch `swift-3.0`)
-  - SVProgressHUD
 
 EXTERNAL SOURCES:
   AlamofireObjectMapper:
@@ -50,8 +48,7 @@ SPEC CHECKSUMS:
   KeychainAccess: 017ea25e313a49eda10bb19b0bb0760fb1edfe1a
   ObjectMapper: 9e385c2295bcc4e16eabbcfc85db801442bba545
   PromiseKit: 7b540d33b9ef6a5b644437a729559a71b1569e19
-  SVProgressHUD: b0830714205bea1317ea1a2ebc71e5633af334d4
 
-PODFILE CHECKSUM: e862c02ba017f40497f91fa6054603d73a5373ab
+PODFILE CHECKSUM: 644dc71732607b5b050040464a51755df253dbfb
 
 COCOAPODS: 1.2.0.beta.1

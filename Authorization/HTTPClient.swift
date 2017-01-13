@@ -33,7 +33,7 @@ enum APIError: Error {
 
 
 public class HTTPClient : NSObject {
-    static let sharedInstance = HTTPClient()
+    public static let sharedInstance = HTTPClient()
     
     
     //MARK: Helper functions
@@ -81,48 +81,48 @@ public class HTTPClient : NSObject {
         return Promise<T?> { (fulfill, reject) -> Void in
             
             AuthorizationService.sharedInstance.getValidToken()
-                .then {
-                    _ -> Void in
-                    
-                    guard let tokenHeader = AuthorizationService.token_header else {
-                        reject(APIError.unAuthorizedError("Unauthorized"))
-                        return
-                    }
-                    
-                    func parsingError(_ erroString : String) -> NSError {
-                        return NSError(domain: "com.paychores.error", code: -100, userInfo: nil)
-                    }
-                    
-                    var encoding: ParameterEncoding = URLEncoding.queryString
-                    
-                    switch method {
-                    case .post:
-                        encoding = JSONEncoding.default
-                    case .get:
-                        encoding = URLEncoding.queryString
-                    case .delete:
-                        encoding = URLEncoding.default
-                    case .put:
-                        encoding = JSONEncoding.default
-                    default:
-                        break
-                    }
-                    
-                    request(route.URLString, method: method, parameters: parameters, encoding: encoding, headers: tokenHeader)
-                        .responseJSON { (response) -> Void in
-                            
-                            if let error = response.result.error {
-                                reject(error) //network error
-                            }else {
-                                if let apiResponse = Mapper<T>().map(JSON: response.result.value as! [String : Any]) {
-                                    fulfill(apiResponse)
-                                } else{
-                                    let err = NSError(domain: "com.paychores.error", code: -101, userInfo: nil)
-                                    reject(err)
-                                }
+            .then {
+                _ -> Void in
+                
+                guard let tokenHeader = AuthorizationService.token_header else {
+                    reject(APIError.unAuthorizedError("Unauthorized"))
+                    return
+                }
+                
+                func parsingError(_ erroString : String) -> NSError {
+                    return NSError(domain: "com.paychores.error", code: -100, userInfo: nil)
+                }
+                
+                var encoding: ParameterEncoding = URLEncoding.queryString
+                
+                switch method {
+                case .post:
+                    encoding = JSONEncoding.default
+                case .get:
+                    encoding = URLEncoding.queryString
+                case .delete:
+                    encoding = URLEncoding.default
+                case .put:
+                    encoding = JSONEncoding.default
+                default:
+                    break
+                }
+                
+                request(route.URLString, method: method, parameters: parameters, encoding: encoding, headers: tokenHeader)
+                    .responseJSON { (response) -> Void in
+                        
+                        if let error = response.result.error {
+                            reject(error) //network error
+                        }else {
+                            if let apiResponse = Mapper<T>().map(JSON: response.result.value as! [String : Any]) {
+                                fulfill(apiResponse)
+                            } else{
+                                let err = NSError(domain: "com.paychores.error", code: -101, userInfo: nil)
+                                reject(err)
                             }
-                            
-                    }
+                        }
+                        
+                }
             }
         }
     }

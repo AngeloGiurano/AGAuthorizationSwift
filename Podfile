@@ -6,7 +6,6 @@ use_frameworks!
 target ‘Authorization’ do
     pod 'Alamofire'
     pod 'AlamofireObjectMapper', :git => 'https://github.com/tristanhimmelman/AlamofireObjectMapper.git', :branch => 'swift-3'
-    pod 'SVProgressHUD'
     pod 'KeychainAccess', '~> 3.0'
     pod 'PromiseKit', :git => 'https://github.com/mxcl/PromiseKit.git', :branch => 'swift-3.0'
     pod 'DateTools'
@@ -18,7 +17,6 @@ end
 target ‘AuthorizationTests’ do
     pod 'Alamofire'
     pod 'AlamofireObjectMapper', :git => 'https://github.com/tristanhimmelman/AlamofireObjectMapper.git', :branch => 'swift-3'
-    pod 'SVProgressHUD'
     pod 'KeychainAccess', '~> 3.0'
     pod 'PromiseKit', :git => 'https://github.com/mxcl/PromiseKit.git', :branch => 'swift-3.0'
 end
