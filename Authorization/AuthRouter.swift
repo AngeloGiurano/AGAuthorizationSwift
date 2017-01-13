@@ -9,7 +9,7 @@
 import Foundation
 
 public enum AuthRouter: RouterType {
-    private static let baseURLString = ""
+    fileprivate static let baseURLString = ""
     
     case login
     case refreshToken

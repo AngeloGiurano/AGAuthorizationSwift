@@ -13,18 +13,18 @@ import DateTools
 
 final class OAuthResponse: Mappable {
     
-    private var authToken: String?
-    private var refreshToken: String?
-    private var expiresIn: Int?
+    fileprivate var authToken: String?
+    fileprivate var refreshToken: String?
+    fileprivate var expiresIn: Int?
     
-    required init?(_ map: Map) {
-        guard let authToken = map.JSONDictionary[CONSTANTS.AuthKeys.accessTokenKey] as? String, refreshToken = map.JSONDictionary[CONSTANTS.AuthKeys.refreshTokenKey] as? String, expDate = map.JSONDictionary[CONSTANTS.AuthKeys.expDateKey] as? Int else {
+    required init?(map: Map) {
+        guard let authToken = map.JSON[CONSTANTS.AuthKeys.accessTokenKey] as? String, let refreshToken = map.JSON[CONSTANTS.AuthKeys.refreshTokenKey] as? String, let expDate = map.JSON[CONSTANTS.AuthKeys.expDateKey] as? Int else {
             return nil
         }
         
         Keychain.sharedInstance.setValue(value: authToken, forKey: CONSTANTS.KeychainConstants.accessTokenKey)
         Keychain.sharedInstance.setValue(value: refreshToken, forKey: CONSTANTS.KeychainConstants.refreshTokenKey)
-        let date = NSDate().dateByAddingSeconds(expDate).timeIntervalSince1970
+        let date = NSDate().addingSeconds(expDate).timeIntervalSince1970
         Keychain.sharedInstance.setValue(value: "\(date)", forKey: CONSTANTS.KeychainConstants.expDateKey)
     }
     

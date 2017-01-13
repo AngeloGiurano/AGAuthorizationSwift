@@ -13,7 +13,7 @@ protocol RouterType {
 }
 
 public enum Router: RouterType {
-    private static let baseURLString = ""
+    fileprivate static let baseURLString = ""
     
     public var URLString : String {
         let path : String = {

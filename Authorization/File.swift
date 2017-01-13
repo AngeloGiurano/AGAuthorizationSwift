@@ -13,7 +13,7 @@ struct File: Mappable {
     var path: String?
     var name: String?
 
-    init?(_ map: Map) {}
+    init?(map: Map) {}
     
     mutating func mapping(map: Map) {
         path <- map["path"]

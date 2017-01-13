@@ -33,10 +33,9 @@ struct MainControllerManager {
                     .then {
                         _ -> Void in
                         return
-                    }.error {
-                        error in
+                    }.catch(execute: { (error) in
                         return
-                }
+                    })
                 
                 return loggedInController
             }
