@@ -4,11 +4,11 @@
 use_frameworks!
 
 target ‘Authorization’ do
-    pod 'Alamofire', '~> 3.3'
-    pod 'AlamofireObjectMapper', '~> 3.0'
+    pod 'Alamofire'
+    pod 'AlamofireObjectMapper', :git => 'https://github.com/tristanhimmelman/AlamofireObjectMapper.git', :branch => 'swift-3'
     pod 'SVProgressHUD'
-    pod 'KeychainAccess'
-    pod 'PromiseKit', '~> 3.5.1'
+    pod 'KeychainAccess', '~> 3.0'
+    pod 'PromiseKit', :git => 'https://github.com/mxcl/PromiseKit.git', :branch => 'swift-3.0'
     pod 'DateTools'
     #pod 'OAuthSwift', '~> 0.5.0'
     #pod 'ReachabilitySwift', :git => 'https://github.com/ashleymills/Reachability.swift'
@@ -16,9 +16,17 @@ target ‘Authorization’ do
 end
 
 target ‘AuthorizationTests’ do
-    pod 'Alamofire', '~> 3.3'
-    pod 'AlamofireObjectMapper', '~> 3.0'
+    pod 'Alamofire'
+    pod 'AlamofireObjectMapper', :git => 'https://github.com/tristanhimmelman/AlamofireObjectMapper.git', :branch => 'swift-3'
     pod 'SVProgressHUD'
-    pod 'KeychainAccess'
-    pod 'PromiseKit', '~> 3.5.1'
+    pod 'KeychainAccess', '~> 3.0'
+    pod 'PromiseKit', :git => 'https://github.com/mxcl/PromiseKit.git', :branch => 'swift-3.0'
+end
+
+post_install do |installer|
+    installer.pods_project.targets.each do |target|
+        target.build_configurations.each do |config|
+            config.build_settings['SWIFT_VERSION'] = '3.0'
+        end
+    end
 end

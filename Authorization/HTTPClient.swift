@@ -18,7 +18,7 @@ private class APIResponse<T : Mappable>: Mappable {
     var error : APIError?
     
     
-    required init?(_ map: Map) {}
+    required init?(map: Map) {}
     
     func mapping(map: Map) {
         success <- map["success"]
@@ -27,7 +27,7 @@ private class APIResponse<T : Mappable>: Mappable {
     }
 }
 
-enum APIError: ErrorType {
+enum APIError: Error {
     case unAuthorizedError(String)
 }
 
@@ -37,45 +37,45 @@ class HTTPClient : NSObject {
     
     
     //MARK: Helper functions
-    func post<T : Mappable>(route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<T?> {
-        return self.httpOperation(.POST, route: route, parameters: parameters)
+    func post<T : Mappable>(_ route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<T?> {
+        return self.httpOperation(method: .post, route: route, parameters: parameters)
     }
     
-    func unauthorizedPost<T: Mappable>(route: RouterType, parameters : [String : AnyObject]? = nil) -> Promise<T?> {
-        return self.httpOperationUnauthorized(.POST, route: route, parameters: parameters)
-    }
-    
-    
-    func post(route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<Void> {
-        return self.httpOperationVoid(.POST, route: route, parameters: parameters)
-    }
-    
-    func get<T : Mappable>(route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<T?> {
-        return self.httpOperation(.GET, route: route, parameters : parameters);
-    }
-    
-    func get(route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<Void> {
-        return self.httpOperationVoid(.GET, route: route, parameters : parameters);
-    }
-    
-    func getList<T: Mappable>(route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<[T]> {
-        return self.httpOperationList(.GET, route: route, parameters: parameters)
-    }
-    
-    func delete<T : Mappable>(route: RouterType, parameters: [String: AnyObject]? = nil) -> Promise<T?> {
-        return self.httpOperation(.DELETE, route: route, parameters: parameters)
+    func unauthorizedPost<T: Mappable>(_ route: RouterType, parameters : [String : AnyObject]? = nil) -> Promise<T?> {
+        return self.httpOperationUnauthorized(.post, route: route, parameters: parameters)
     }
     
     
-    func delete(route: Router, parameters: [String: AnyObject]? = nil) -> Promise<Void> {
-        return self.httpOperationVoid(.DELETE, route: route, parameters: parameters)
+    func post(_ route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<Void> {
+        return self.httpOperationVoid(.post, route: route, parameters: parameters)
     }
     
-    func put<T: Mappable>(route: RouterType, parameters: [String: AnyObject]? = nil) -> Promise<T?> {
-        return self.httpOperation(.PUT, route: route, parameters: parameters)
+    func get<T: Mappable>(_ route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<T?> {
+        return self.httpOperation(method: .get, route: route, parameters : parameters);
     }
     
-    private func httpOperation<T : Mappable>(method : Alamofire.Method, route : RouterType, let parameters : [String : AnyObject]? = nil) -> Promise<T?> {
+    func get(_ route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<Void> {
+        return self.httpOperationVoid(.get, route: route, parameters : parameters);
+    }
+    
+    func getList<T: Mappable>(_ route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<[T]> {
+        return self.httpOperationList(.get, route: route, parameters: parameters)
+    }
+    
+    func delete<T: Mappable>(_ route: RouterType, parameters: [String: AnyObject]? = nil) -> Promise<T?> {
+        return self.httpOperation(method: .delete, route: route, parameters: parameters)
+    }
+    
+    
+    func delete(_ route: Router, parameters: [String: AnyObject]? = nil) -> Promise<Void> {
+        return self.httpOperationVoid(.delete, route: route, parameters: parameters)
+    }
+    
+    func put<T: Mappable>(_ route: RouterType, parameters: [String: AnyObject]? = nil) -> Promise<T?> {
+        return self.httpOperation(method: .put, route: route, parameters: parameters)
+    }
+    
+    fileprivate func httpOperation<T : Mappable>(method : HTTPMethod, route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<T?> {
         
         
         return Promise<T?> { (fulfill, reject) -> Void in
@@ -89,32 +89,32 @@ class HTTPClient : NSObject {
                         return
                     }
                     
-                    func parsingError(erroString : String) -> NSError {
+                    func parsingError(_ erroString : String) -> NSError {
                         return NSError(domain: "com.paychores.error", code: -100, userInfo: nil)
                     }
                     
-                    var encoding: ParameterEncoding = .URLEncodedInURL
+                    var encoding: ParameterEncoding = URLEncoding.queryString
                     
                     switch method {
-                    case .POST:
-                        encoding = ParameterEncoding.JSON
-                    case .GET:
-                        encoding = ParameterEncoding.URLEncodedInURL
-                    case .DELETE:
-                        encoding = ParameterEncoding.URL
-                    case .PUT:
-                        encoding = ParameterEncoding.JSON
+                    case .post:
+                        encoding = JSONEncoding.default
+                    case .get:
+                        encoding = URLEncoding.queryString
+                    case .delete:
+                        encoding = URLEncoding.default
+                    case .put:
+                        encoding = JSONEncoding.default
                     default:
                         break
                     }
                     
-                    request(method, route.URLString, parameters: parameters, encoding: encoding, headers: tokenHeader)
+                    request(route.URLString, method: method, parameters: parameters, encoding: encoding, headers: tokenHeader)
                         .responseJSON { (response) -> Void in
                             
                             if let error = response.result.error {
                                 reject(error) //network error
                             }else {
-                                if let apiResponse = Mapper<T>().map(response.result.value) {
+                                if let apiResponse = Mapper<T>().map(JSON: response.result.value as! [String : Any]) {
                                     fulfill(apiResponse)
                                 } else{
                                     let err = NSError(domain: "com.paychores.error", code: -101, userInfo: nil)
@@ -181,7 +181,7 @@ class HTTPClient : NSObject {
     //        }
     //    }
     
-    private func httpOperationList<T : Mappable>(method : Alamofire.Method, route : RouterType, let parameters : [String : AnyObject]? = nil) -> Promise<[T]> {
+    fileprivate func httpOperationList<T : Mappable>(_ method : HTTPMethod, route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<[T]> {
         
         return Promise<[T]> { (fulfill, reject) -> Void in
             
@@ -194,24 +194,24 @@ class HTTPClient : NSObject {
                         return
                     }
                     
-                    func parsingError(erroString : String) -> NSError {
+                    func parsingError(_ erroString : String) -> NSError {
                         return NSError(domain: "com.paychores.error", code: -100, userInfo: nil)
                     }
                     
-                    var encoding: ParameterEncoding = .URLEncodedInURL
+                    var encoding: ParameterEncoding = URLEncoding.queryString
                     
                     switch method {
-                    case .POST:
-                        encoding = ParameterEncoding.JSON
-                    case .GET:
-                        encoding = ParameterEncoding.URLEncodedInURL
+                    case .post:
+                        encoding = JSONEncoding.default
+                    case .get:
+                        encoding = URLEncoding.queryString
                     default:
                         break
                     }
                     
-                    Alamofire.request(method, route.URLString, parameters: parameters, encoding: encoding, headers: tokenHeader)
+                    Alamofire.request(route.URLString, method: method, parameters: parameters, encoding: encoding, headers: tokenHeader)
                         .validate()
-                        .responseArray { (response: Response<[T], NSError>) in
+                        .responseArray { (response: DataResponse<[T]>) in
                             if let apiResponse = response.result.value {
                                 fulfill(apiResponse)
                                 return
@@ -227,7 +227,7 @@ class HTTPClient : NSObject {
     }
     
     
-    private func httpOperationVoid(method : Alamofire.Method, route : RouterType, let parameters : [String : AnyObject]? = nil) -> Promise<Void> {
+    fileprivate func httpOperationVoid(_ method : HTTPMethod, route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<Void> {
         
         
         return Promise<Void> { (fulfill, reject) -> Void in
@@ -241,24 +241,26 @@ class HTTPClient : NSObject {
                         return
                     }
                     
-                    func parsingError(erroString : String) -> NSError {
+                    func parsingError(_ erroString : String) -> NSError {
                         return NSError(domain: "com.wallbrand.error", code: -100, userInfo: nil)
                     }
                     
-                    var encoding: ParameterEncoding = .URLEncodedInURL
+                    var encoding: ParameterEncoding = URLEncoding.queryString
                     
                     switch method {
-                    case .POST:
-                        encoding = ParameterEncoding.JSON
-                    case .GET:
-                        encoding = ParameterEncoding.URLEncodedInURL
-                    case .DELETE:
-                        encoding = ParameterEncoding.URL
+                    case .post:
+                        encoding = JSONEncoding.default
+                    case .get:
+                        encoding = URLEncoding.queryString
+                    case .delete:
+                        encoding = URLEncoding.default
+                    case .put:
+                        encoding = JSONEncoding.default
                     default:
                         break
                     }
                     
-                    request(method, route.URLString, parameters: parameters, encoding: encoding, headers: tokenHeader)
+                    request(route.URLString, method: method, parameters: parameters, encoding: encoding, headers: tokenHeader)
                         .responseJSON { (response) -> Void in
                             
                             if response.response?.statusCode == 200 {
@@ -274,35 +276,37 @@ class HTTPClient : NSObject {
     
     
     
-    private func httpOperationUnauthorized<T: Mappable>(method : Alamofire.Method, route : RouterType, let parameters : [String : AnyObject]? = nil) -> Promise<T?> {
+    fileprivate func httpOperationUnauthorized<T: Mappable>(_ method : HTTPMethod, route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<T?> {
         
         
         return Promise<T?> { (fulfill, reject) -> Void in
             
-            func parsingError(erroString : String) -> NSError {
+            func parsingError(_ erroString : String) -> NSError {
                 return NSError(domain: "com.paychores.com", code: -100, userInfo: nil)
             }
             
-            var encoding: ParameterEncoding = .URLEncodedInURL
+            var encoding: ParameterEncoding = URLEncoding.queryString
             
             switch method {
-            case .POST:
-                encoding = ParameterEncoding.URL
-            case .GET:
-                encoding = ParameterEncoding.URLEncodedInURL
-            case .DELETE:
-                encoding = ParameterEncoding.URL
+            case .post:
+                encoding = JSONEncoding.default
+            case .get:
+                encoding = URLEncoding.queryString
+            case .delete:
+                encoding = URLEncoding.default
+            case .put:
+                encoding = JSONEncoding.default
             default:
                 break
             }
             
-            request(method, route.URLString, parameters: parameters, encoding: encoding, headers: nil)
+            request(route.URLString, method: method, parameters: parameters, encoding: encoding, headers: nil)
                 .responseJSON { (response) -> Void in
                     
                     if let error = response.result.error {
                         reject(error) //network error
                     }else {
-                        if let apiResponse = Mapper<T>().map(response.result.value) {
+                        if let apiResponse = Mapper<T>().map(JSON: response.result.value as! [String : Any]) {
                             fulfill(apiResponse)
                         }else{
                             let err = NSError(domain: "com.paychores.error", code: -101, userInfo: nil)
@@ -315,7 +319,7 @@ class HTTPClient : NSObject {
     }
     
     
-    func uploadFile(withData data: NSData, route : RouterType, let parameters : [String : AnyObject]? = nil) -> Promise<File?> {
+    func uploadFile(withData data: NSData, route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<File?> {
         return Promise<File?> {
             fulfill, reject in
             AuthorizationService.sharedInstance.getValidToken()
@@ -327,23 +331,21 @@ class HTTPClient : NSObject {
                     return
                 }
                 
-                Alamofire.upload(.POST, route.URLString, headers: tokenHeader, multipartFormData: {
-                    multipartFormData in
-                    multipartFormData.appendBodyPart(data: data, name: "file[file]",
-                        fileName: "image.png", mimeType: "image/png")
-                    }, encodingCompletion: {
-                        encodingCompletionResult in
-                        UIApplication.sharedApplication().networkActivityIndicatorVisible = true
-                        switch encodingCompletionResult {
-                        case .Success(request: let upload, streamingFromDisk: _, streamFileURL: _):
-                            upload
-                                .responseObject { response in
-                                    fulfill(response.result.value)
-                            }
-                        case .Failure(let error):
-                            reject(error)
+                    
+                Alamofire.upload(multipartFormData: { (multipartFormData) in
+                    multipartFormData.append(data as Data, withName: "file[file]", fileName: "image.png", mimeType: "image/png")
+                }, usingThreshold: UInt64.init(100), to: route.URLString, method: .post, headers: tokenHeader, encodingCompletion: { (encodingCompletionResult) in
+                    UIApplication.shared.isNetworkActivityIndicatorVisible = true
+                    switch encodingCompletionResult {
+                    case .success(request: let upload, streamingFromDisk: _, streamFileURL: _):
+                        upload.responseObject { response in
+                            fulfill(response.result.value)
                         }
+                    case .failure(let error):
+                        reject(error)
+                    }
                 })
+                
             }
         }
     }

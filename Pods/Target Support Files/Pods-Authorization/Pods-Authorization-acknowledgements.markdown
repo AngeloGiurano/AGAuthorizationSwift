@@ -100,10 +100,6 @@ SOFTWARE.
 
 
 
-## OMGHTTPURLRQ
-
-https://github.com/mxcl/OMGHTTPURLRQ/blob/master/README.markdown
-
 ## ObjectMapper
 
 The MIT License (MIT)

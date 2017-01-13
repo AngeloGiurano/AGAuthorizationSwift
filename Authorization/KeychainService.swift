@@ -26,10 +26,10 @@ extension Keychain {
         return token
     }
     
-    private var tokenExpDate: NSDate? {
+    fileprivate var tokenExpDate: NSDate? {
         get {
             guard let expDate = self[CONSTANTS.KeychainConstants.expDateKey] else { return nil }
-            let timeInterval = NSTimeInterval.init(expDate)
+            let timeInterval = TimeInterval.init(expDate)
             return NSDate.init(timeIntervalSince1970: timeInterval!)
         }
     }
@@ -41,11 +41,12 @@ extension Keychain {
     var accessTokenIsExpired: Bool {
         get {
             guard let expDate = tokenExpDate else { return true }
-            return expDate.earlierDate(NSDate()).isEqualToDate(expDate)
+            let earlierDate = expDate.earlierDate(Date())
+            return (earlierDate as NSDate).isEqual(to: expDate as Date)
         }
     }
     
-    func setValue(value value: String, forKey key: String) {
+    func setValue(value: String, forKey key: String) {
         self[key] = value
     }
     

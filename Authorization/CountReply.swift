@@ -15,7 +15,7 @@ struct CountReply<T: Mappable>: Mappable {
     var pagination: Pagination?
     var error: APIError?
     
-    init?(_ map: Map) {}
+    init?(map: Map) {}
     
     init() {}
     
@@ -34,7 +34,7 @@ internal struct Pagination: Mappable {
     var count: Int?
     var limit: Int?
     
-    init?(_ map: Map) {}
+    init?(map: Map) {}
     
     mutating func mapping(map: Map) {
         pageCount <- map["page_count"]

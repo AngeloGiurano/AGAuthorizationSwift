@@ -28,34 +28,31 @@ class AuthorizationTests: XCTestCase {
     
     func testLoginShouldSucceed() {
         let authVC = TestAuthorizationViewController()
-
-        AuthorizationService.sharedInstance.delegate = authVC
         
-        let expectation = expectationWithDescription("Login succeeded")
+        let expectation = self.expectation(description: "Login succeeded")
         authVC.loginSucceded = {
             expectation.fulfill()
         }
 
         authVC.login(withUsername: "patient@patient.com", andPassword: "Test1234!")
-        waitForExpectationsWithTimeout(10, handler: nil)
+        waitForExpectations(timeout: 10, handler: nil)
     }
     
     func testLoginShouldFail() {
         let authVC = TestAuthorizationViewController()
-        AuthorizationService.sharedInstance.delegate = authVC
         
-        let expectation = expectationWithDescription("Login failed")
+        let expectation = self.expectation(description: "Login failed")
         authVC.loginFailed = {
             expectation.fulfill()
         }
         
         authVC.login(withUsername: "patient@patiet.com", andPassword: "Test1234!")
-        waitForExpectationsWithTimeout(10, handler: nil)
+        waitForExpectations(timeout: 10, handler: nil)
     }
     
     func testPerformanceExample() {
         // This is an example of a performance test case.
-        self.measureBlock {
+        self.measure {
             // Put the code you want to measure the time of here.
         }
     }
