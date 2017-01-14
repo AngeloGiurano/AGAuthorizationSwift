@@ -9,7 +9,7 @@
 import Foundation
 
 public struct CONSTANTS {
-    static let basePath = "http://api.anpost.ops-dev.pl/"
+    public static let basePath = "http://api.anpost.ops-dev.pl/"
 
     static let client_id = "2_55ltqp8wo0u8w4ocgkoc8kowkg00gco4oc4osskgwgs4go00ks"
     static let client_secret = "avia4sc44lwocwok80ogw0k4owwg80cc0w4gw8wc4cc4c000c"

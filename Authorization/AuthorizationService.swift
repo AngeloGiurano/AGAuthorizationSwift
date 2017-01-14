@@ -33,6 +33,8 @@ public final class AuthorizationService {
     
     public static let sharedInstance = AuthorizationService()
     
+    public var delegate: AuthSessionDelegate?
+    
     fileprivate init() {}
     
     public static var token_header: [String: String]? {
@@ -82,6 +84,12 @@ public final class AuthorizationService {
         return getToken(AuthRouter.login, withParams: parameters as [String : AnyObject]?)
     }
     
+    public func getApplicationToken() -> Promise<String> {
+        let parameters = AuthorizationService.registerParameters
+        return getToken(AuthRouter.login, withParams: parameters as [String : AnyObject]?)
+    }
+    
+    
     public func getValidToken() -> Promise<OAuthResponse?> {
         let parameters = AuthorizationService.refreshTokenParameters
         return getValidToken(AuthRouter.refreshToken, withParams: parameters as [String : AnyObject]?)
@@ -106,7 +114,7 @@ public final class AuthorizationService {
                     }else {
                         if let result = response.result.value as? [String: AnyObject], let accessToken = result[CONSTANTS.AuthKeys.accessTokenKey] as? String {
                             fulfill(accessToken)
-                        }else{
+                        } else {
                             let err = NSError(domain: "com.paychores.error", code: -101, userInfo: nil)
                             reject(err)
                         }
@@ -133,13 +141,23 @@ public final class AuthorizationService {
             
             request(route.URLString, method: .post, parameters: parameters, encoding: encoding, headers: nil)
                 .responseJSON { (response) -> Void in
+                    
+                    guard let responseResult = response.response, 200 ... 299 ~= responseResult.statusCode else {
+                        let error = NSError(domain: "com.paychores.error", code: response.response!.statusCode, userInfo: nil)
+                        self.delegate?.refreshTokenFailed(with: error)
+                        reject(error)
+                    }
+                 
                     if let error = response.result.error {
+                        self.delegate?.refreshTokenFailed(with: error)
                         reject(error) //network error
                     } else {
                         if let apiResponse = Mapper<OAuthResponse>().map(JSON: response.result.value as! [String : Any]) {
+                            self.delegate?.sessionDidRefreshToken()
                             fulfill(apiResponse)
-                        }else{
+                        } else {
                             let err = NSError(domain: "com.paychores.error", code: -101, userInfo: nil)
+                            self.delegate?.refreshTokenFailed(with: err)
                             reject(err)
                         }
                     }

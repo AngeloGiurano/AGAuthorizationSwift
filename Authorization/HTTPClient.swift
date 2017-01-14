@@ -37,41 +37,41 @@ public class HTTPClient : NSObject {
     
     
     //MARK: Helper functions
-    func post<T : Mappable>(_ route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<T?> {
+    public func post<T : Mappable>(_ route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<T?> {
         return self.httpOperation(method: .post, route: route, parameters: parameters)
     }
     
-    func unauthorizedPost<T: Mappable>(_ route: RouterType, parameters : [String : AnyObject]? = nil) -> Promise<T?> {
+    public func unauthorizedPost<T: Mappable>(_ route: RouterType, parameters : [String : AnyObject]? = nil) -> Promise<T?> {
         return self.httpOperationUnauthorized(.post, route: route, parameters: parameters)
     }
     
     
-    func post(_ route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<Void> {
+    public func post(_ route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<Void> {
         return self.httpOperationVoid(.post, route: route, parameters: parameters)
     }
     
-    func get<T: Mappable>(_ route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<T?> {
+    public func get<T: Mappable>(_ route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<T?> {
         return self.httpOperation(method: .get, route: route, parameters : parameters);
     }
     
-    func get(_ route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<Void> {
+    public func get(_ route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<Void> {
         return self.httpOperationVoid(.get, route: route, parameters : parameters);
     }
     
-    func getList<T: Mappable>(_ route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<[T]> {
+    public func getList<T: Mappable>(_ route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<[T]> {
         return self.httpOperationList(.get, route: route, parameters: parameters)
     }
     
-    func delete<T: Mappable>(_ route: RouterType, parameters: [String: AnyObject]? = nil) -> Promise<T?> {
+    public func delete<T: Mappable>(_ route: RouterType, parameters: [String: AnyObject]? = nil) -> Promise<T?> {
         return self.httpOperation(method: .delete, route: route, parameters: parameters)
     }
     
     
-    func delete(_ route: Router, parameters: [String: AnyObject]? = nil) -> Promise<Void> {
+    public func delete(_ route: Router, parameters: [String: AnyObject]? = nil) -> Promise<Void> {
         return self.httpOperationVoid(.delete, route: route, parameters: parameters)
     }
     
-    func put<T: Mappable>(_ route: RouterType, parameters: [String: AnyObject]? = nil) -> Promise<T?> {
+    public func put<T: Mappable>(_ route: RouterType, parameters: [String: AnyObject]? = nil) -> Promise<T?> {
         return self.httpOperation(method: .put, route: route, parameters: parameters)
     }
     
@@ -261,6 +261,7 @@ public class HTTPClient : NSObject {
                     }
                     
                     request(route.URLString, method: method, parameters: parameters, encoding: encoding, headers: tokenHeader)
+                        .validate()
                         .responseJSON { (response) -> Void in
                             
                             if response.response?.statusCode == 200 {
@@ -274,9 +275,7 @@ public class HTTPClient : NSObject {
     }
     
     
-    
-    
-    fileprivate func httpOperationUnauthorized<T: Mappable>(_ method : HTTPMethod, route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<T?> {
+    public func httpOperationUnauthorized<T: Mappable>(_ method : HTTPMethod, route : RouterType, parameters : [String : AnyObject]? = nil, headers: HTTPHeaders? = nil) -> Promise<T?> {
         
         
         return Promise<T?> { (fulfill, reject) -> Void in
@@ -300,7 +299,8 @@ public class HTTPClient : NSObject {
                 break
             }
             
-            request(route.URLString, method: method, parameters: parameters, encoding: encoding, headers: nil)
+            request(route.URLString, method: method, parameters: parameters, encoding: encoding, headers: headers)
+                .validate()
                 .responseJSON { (response) -> Void in
                     
                     if let error = response.result.error {

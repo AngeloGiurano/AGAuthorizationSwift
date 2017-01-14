@@ -8,7 +8,7 @@
 
 import Foundation
 
-protocol RouterType {
+public protocol RouterType {
     var URLString: String { get }
 }
 
