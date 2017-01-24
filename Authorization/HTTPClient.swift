@@ -308,6 +308,7 @@ public class HTTPClient : NSObject {
                     }else {
                         if let apiResponse = Mapper<T>().map(JSON: response.result.value as! [String : Any]) {
                             fulfill(apiResponse)
+                            
                         }else{
                             let err = NSError(domain: "com.paychores.error", code: -101, userInfo: nil)
                             reject(err)

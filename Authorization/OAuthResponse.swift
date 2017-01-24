@@ -21,8 +21,8 @@ public final class OAuthResponse: Mappable {
         guard let authToken = map.JSON[CONSTANTS.AuthKeys.accessTokenKey] as? String, let refreshToken = map.JSON[CONSTANTS.AuthKeys.refreshTokenKey] as? String, let expDate = map.JSON[CONSTANTS.AuthKeys.expDateKey] as? Int else {
             return nil
         }
-        
-        Keychain.sharedInstance.setValue(value: authToken, forKey: CONSTANTS.KeychainConstants.accessTokenKey)
+    
+        Keychain.sharedInstance.setValue(value: authToken, forKey   : CONSTANTS.KeychainConstants.accessTokenKey)
         Keychain.sharedInstance.setValue(value: refreshToken, forKey: CONSTANTS.KeychainConstants.refreshTokenKey)
         let date = NSDate().addingSeconds(expDate).timeIntervalSince1970
         Keychain.sharedInstance.setValue(value: "\(date)", forKey: CONSTANTS.KeychainConstants.expDateKey)

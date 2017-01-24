@@ -9,7 +9,7 @@
 import UIKit
 @testable import Authorization
 
-class TestAuthorizationViewController: UIViewController, AuthViewControllerType, AuthViewControllerDelegate {
+class TestAuthorizationViewController: UIViewController {
     var loginSucceded: (() -> ())?
     var loginFailed: (() -> ())?
     

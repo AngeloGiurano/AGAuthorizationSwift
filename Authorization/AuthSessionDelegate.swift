@@ -8,7 +8,9 @@
 
 import Foundation
 
-protocol AuthSessionDelegate: class {
+public protocol AuthSessionDelegate: class {
+    func sessionDidLogin()
+    func sessionDidLogout()
     func refreshTokenFailed(with error: Error)
     func sessionDidRefreshToken()
 }

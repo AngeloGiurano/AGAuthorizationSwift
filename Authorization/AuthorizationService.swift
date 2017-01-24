@@ -67,7 +67,6 @@ public final class AuthorizationService {
         }
     }
     
-    
     public func login(withUsername username: String, andPassword password: String) -> Promise<OAuthResponse?> {
         var parameters = AuthorizationService.loginParameters
         parameters += ["username": username, "password": password]
@@ -146,6 +145,7 @@ public final class AuthorizationService {
                         let error = NSError(domain: "com.paychores.error", code: response.response!.statusCode, userInfo: nil)
                         self.delegate?.refreshTokenFailed(with: error)
                         reject(error)
+                        return
                     }
                  
                     if let error = response.result.error {
@@ -167,7 +167,6 @@ public final class AuthorizationService {
     
     public func logout() {
         Keychain.sharedInstance.logOut()
-        let appDelegate = UIApplication.shared.delegate
-        appDelegate?.window!!.rootViewController = MainControllerManager.mainViewController
+        delegate?.sessionDidLogout()
     }
 }

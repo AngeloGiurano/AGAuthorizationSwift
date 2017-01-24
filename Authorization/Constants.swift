@@ -32,8 +32,8 @@ public struct CONSTANTS {
     
     struct KeychainConstants {
         static let service = "com.returnpal.anpost"
-        static let accessTokenKey = ""
-        static let refreshTokenKey = ""
-        static let expDateKey = ""
+        static let accessTokenKey = "access_token"
+        static let refreshTokenKey = "refresh_token"
+        static let expDateKey = "exp_date"
     }
 }

@@ -33,8 +33,7 @@ class AuthorizationTests: XCTestCase {
         authVC.loginSucceded = {
             expectation.fulfill()
         }
-
-        authVC.login(withUsername: "patient@patient.com", andPassword: "Test1234!")
+        AuthorizationService.sharedInstance.login(withUsername: "customer", andPassword: "Test2016!")
         waitForExpectations(timeout: 10, handler: nil)
     }
     
@@ -46,7 +45,6 @@ class AuthorizationTests: XCTestCase {
             expectation.fulfill()
         }
         
-        authVC.login(withUsername: "patient@patiet.com", andPassword: "Test1234!")
         waitForExpectations(timeout: 10, handler: nil)
     }
     
