@@ -81,50 +81,48 @@ public class HTTPClient : NSObject {
         return Promise<T?> { (fulfill, reject) -> Void in
             
             AuthorizationService.sharedInstance.getValidToken()
-                .then {
-                    _ -> Void in
-                    
-                    guard let tokenHeader = AuthorizationService.token_header else {
-                        reject(APIError.unAuthorizedError("Unauthorized"))
-                        return
-                    }
-                    
-                    func parsingError(_ erroString : String) -> NSError {
-                        return NSError(domain: "com.paychores.error", code: -100, userInfo: nil)
-                    }
-                    
-                    var encoding: ParameterEncoding = URLEncoding.queryString
-                    
-                    switch method {
-                    case .post:
-                        encoding = JSONEncoding.default
-                    case .get:
-                        encoding = URLEncoding.queryString
-                    case .delete:
-                        encoding = URLEncoding.default
-                    case .put:
-                        encoding = JSONEncoding.default
-                    default:
-                        break
-                    }
-                    
-                    let params: [String: Any]? = parameters
-                    request(route.URLString, method: method, parameters: params, encoding: encoding, headers: tokenHeader)
-                        .validate()
-                        .responseJSON { (response) -> Void in
-                            
-                            if let error = response.result.error {
-                                reject(error) //network error
-                            }else {
-                                if let apiResponse = Mapper<T>().map(JSON: response.result.value as! [String : Any]) {
-                                    fulfill(apiResponse)
-                                } else{
-                                    let err = NSError(domain: "com.paychores.error", code: -101, userInfo: nil)
-                                    reject(err)
-                                }
+            .then {
+                _ -> Void in
+                
+                guard let tokenHeader = AuthorizationService.token_header else {
+                    reject(APIError.unAuthorizedError("Unauthorized"))
+                    return
+                }
+                
+                func parsingError(_ erroString : String) -> NSError {
+                    return NSError(domain: "com.paychores.error", code: -100, userInfo: nil)
+                }
+                
+                var encoding: ParameterEncoding = URLEncoding.queryString
+                
+                switch method {
+                case .post:
+                    encoding = JSONEncoding.default
+                case .get:
+                    encoding = URLEncoding.queryString
+                case .delete:
+                    encoding = URLEncoding.default
+                case .put:
+                    encoding = JSONEncoding.default
+                default:
+                    break
+                }
+                let params: [String: Any]? = parameters
+                request(route.URLString, method: method, parameters: params, encoding: encoding, headers: tokenHeader)
+                    .responseJSON { (response) -> Void in
+                        
+                        if let error = response.result.error {
+                            reject(error) //network error
+                        }else {
+                            if let apiResponse = Mapper<T>().map(JSON: response.result.value as! [String : Any]) {
+                                fulfill(apiResponse)
+                            } else{
+                                let err = NSError(domain: "com.paychores.error", code: -101, userInfo: nil)
+                                reject(err)
                             }
-                            
-                    }
+                        }
+                        
+                }
             }
         }
     }
@@ -210,7 +208,6 @@ public class HTTPClient : NSObject {
                     default:
                         break
                     }
-                    
                     let params: [String: Any]? = parameters
                     Alamofire.request(route.URLString, method: method, parameters: params, encoding: encoding, headers: tokenHeader)
                         .validate()
@@ -264,7 +261,7 @@ public class HTTPClient : NSObject {
                     }
                     
                     let params: [String: Any]? = parameters
-                    request(route.URLString, method: method, parameters: parameters, encoding: encoding, headers: tokenHeader)
+                    request(route.URLString, method: method, parameters: params, encoding: encoding, headers: tokenHeader)
                         .validate()
                         .responseJSON { (response) -> Void in
                             
@@ -303,7 +300,6 @@ public class HTTPClient : NSObject {
                 break
             }
             
-            
             let params: [String: Any]? = parameters
             request(route.URLString, method: method, parameters: params, encoding: encoding, headers: headers)
                 .validate()
@@ -329,31 +325,30 @@ public class HTTPClient : NSObject {
     func uploadFile(withData data: NSData, route : RouterType, parameters : [String : AnyObject]? = nil) -> Promise<File?> {
         return Promise<File?> {
             fulfill, reject in
-            
             AuthorizationService.sharedInstance.getValidToken()
                 .then {
-                    _ -> Void in
+                _ -> Void in
+                
+                guard let tokenHeader = AuthorizationService.token_header else {
+                    reject(APIError.unAuthorizedError("Unauthorized"))
+                    return
+                }
+                
                     
-                    guard let tokenHeader = AuthorizationService.token_header else {
-                        reject(APIError.unAuthorizedError("Unauthorized"))
-                        return
-                    }
-                    
-                    
-                    Alamofire.upload(multipartFormData: { (multipartFormData) in
-                        multipartFormData.append(data as Data, withName: "file[file]", fileName: "image.png", mimeType: "image/png")
-                    }, usingThreshold: UInt64.init(100), to: route.URLString, method: .post, headers: tokenHeader, encodingCompletion: { (encodingCompletionResult) in
-                        UIApplication.shared.isNetworkActivityIndicatorVisible = true
-                        switch encodingCompletionResult {
-                        case .success(request: let upload, streamingFromDisk: _, streamFileURL: _):
-                            upload.responseObject { response in
-                                fulfill(response.result.value)
-                            }
-                        case .failure(let error):
-                            reject(error)
+                Alamofire.upload(multipartFormData: { (multipartFormData) in
+                    multipartFormData.append(data as Data, withName: "file[file]", fileName: "image.png", mimeType: "image/png")
+                }, usingThreshold: UInt64.init(100), to: route.URLString, method: .post, headers: tokenHeader, encodingCompletion: { (encodingCompletionResult) in
+                    UIApplication.shared.isNetworkActivityIndicatorVisible = true
+                    switch encodingCompletionResult {
+                    case .success(request: let upload, streamingFromDisk: _, streamFileURL: _):
+                        upload.responseObject { response in
+                            fulfill(response.result.value)
                         }
-                    })
-                    
+                    case .failure(let error):
+                        reject(error)
+                    }
+                })
+                
             }
         }
     }
